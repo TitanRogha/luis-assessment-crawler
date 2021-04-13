@@ -1,3 +1,4 @@
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jsonldjava.core.JsonLdOptions;
 import com.github.jsonldjava.core.JsonLdProcessor;
@@ -45,19 +46,21 @@ public class WebCrawler {
                 Elements scriptElements = doc.getElementsByTag("script");
                 for (Element element : scriptElements) {
                         if(element.attr("type").equals("application/ld+json")) {
-                            //System.out.println(element.data());
+
+                            ObjectMapper objectMapper = new ObjectMapper();
+                            JsonNode jsonNode = objectMapper.readTree(element.data());
+                            String type = jsonNode.get("@type").asText();
                             Object jsonObject = JsonUtils.fromString(element.data());
                             Object compact = JsonLdProcessor.compact(jsonObject,new HashMap<>(),new JsonLdOptions());
                             String compactContent = JsonUtils.toPrettyString(compact);
-                            //System.out.println(compactContent);
-                            ObjectMapper objectMapper = new ObjectMapper();
-                            WebSite webSite = objectMapper.readValue(compactContent, WebSite.class);
-                            System.out.println(webSite.getUrl().getId());
-                            System.out.println(webSite.getPotentialAction().getTarget());
+                            JsonLd jsonLd = Factory.build(type);
+                            System.out.println(compactContent);
+                            jsonLd=objectMapper.readValue(compactContent, jsonLd.getClass());
+                            //System.out.println(jsonLd.toString());
                         }
                 }
-                //System.out.println("Link " + url);
-                //System.out.println("Title " + doc.title());
+                System.out.println("Link " + url);
+                System.out.println("Title " + doc.title());
                 v.add(url);
                 return doc;
             }

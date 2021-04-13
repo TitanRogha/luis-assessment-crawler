@@ -4,7 +4,7 @@ import lombok.Data;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
-public class WebSite {
+public class WebSite implements JsonLd{
 
     @JsonProperty("http://schema.org/potentialAction")
     private SearchAction potentialAction;
