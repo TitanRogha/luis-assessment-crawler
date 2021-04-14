@@ -20,7 +20,7 @@
             <property name="javax.persistence.jdbc.user" value="root" />
             <!-- Password -->
             <property name="javax.persistence.jdbc.password" value="Werewolf27*" />
-            <property name = "hibernate.show_sql" value = "true" />
+            <property name = "hibernate.show_sql" value = "false" />
         </properties>
     </persistence-unit>
 </persistence>

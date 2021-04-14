@@ -3,6 +3,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jsonldjava.core.JsonLdOptions;
 import com.github.jsonldjava.core.JsonLdProcessor;
 import com.github.jsonldjava.utils.JsonUtils;
+import models.ImageObject;
+import models.Product;
 import models.WebSite;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -43,44 +45,53 @@ public class WebCrawler {
             Document doc = con.get();
             if (con.response().statusCode() == 200) {
                 Elements scriptElements = doc.getElementsByTag("script");
+                int counter = 0;
                 for (Element element : scriptElements) {
+
                         if(element.attr("type").equals("application/ld+json")) {
 
                             ObjectMapper objectMapper = new ObjectMapper();
                             JsonNode jsonNode = objectMapper.readTree(element.data());
                             String type = jsonNode.get("@type").asText();
-                            Object jsonObject = JsonUtils.fromString(element.data());
-                            Object compact = JsonLdProcessor.compact(jsonObject,new HashMap<>(),new JsonLdOptions());
-                            String compactContent = JsonUtils.toPrettyString(compact);
                             System.out.println(type);
+                            if(type.equals("ImageObject")) {
+                                Object jsonObject = JsonUtils.fromString(element.data());
+                                Object compact = JsonLdProcessor.compact(jsonObject, new HashMap<>(), new JsonLdOptions());
+                                String compactContent = JsonUtils.toPrettyString(compact);
+                                System.out.println(compactContent);
 
-                            switch (type){
-                                case "WebSite":
-                                    WebSite webSite=objectMapper.readValue(compactContent, WebSite.class);
-                                    Persist.addWebSite(1, webSite.getPotentialAction().getType(),webSite.getPotentialAction().getQuery_input(),webSite.getPotentialAction().getTarget(),webSite.getUrl().getUrl());
+                                switch (type) {
 
-                                case "Product":
+                                    case "WebSite":
+                                        WebSite webSite = objectMapper.readValue(compactContent, WebSite.class);
+                                        Persist.addWebSite(webSite.getPotentialAction(), webSite.getUrl());
+                                        break;
+                                    case "Product":
+                                        Product product = objectMapper.readValue(compactContent, Product.class);
+                                        Persist.addProduct(product.getProductId(), product.getAudience(), product.getBrand(), product.getDescription(), product.getImage(), product.getQtin13(), product.getName(), product.getOffers(), product.getSku(), product.getUrl(), product.getWeight());
+                                        counter++;
+                                        break;
+                                    case "ImageObject":
+                                        ImageObject imageObject = objectMapper.readValue(compactContent,ImageObject.class);
+                                        Persist.addImageObject(counter,imageObject.getAuthor(),imageObject.getContentUrl(),imageObject.getDescription(),imageObject.getMainEntityOfPage(),imageObject.getName(),imageObject.getRepresentativeOfPage());
+                                        break;
+                                    default:
 
-                                case "ImageObject":
 
-                                default:
-
-
+                                }
                             }
-
 
 
                         }
                 }
-                System.out.println("Link " + url);
-                System.out.println("Title " + doc.title());
+                //System.out.println("Link " + url);
+                //System.out.println("Title " + doc.title());
                 v.add(url);
                 return doc;
             }
             System.out.println("Algo fallo aca");
             return null;
         } catch (Exception e){
-            System.out.println(e.fillInStackTrace());
                 return null;
             }
 
