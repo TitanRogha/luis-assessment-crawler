@@ -13,6 +13,11 @@ import javax.persistence.Persistence;
 public class Persist {
     private static EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("WebCrawler");
 
+    /**
+     *
+     * @param searchAction
+     * @param url
+     */
     public static void addWebSite(WebSite.SearchAction searchAction, WebSite.Url url) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         EntityTransaction et = null;
@@ -36,9 +41,23 @@ public class Persist {
         }
     }
 
+    /**
+     *
+     * @param productId
+     * @param audience
+     * @param brand
+     * @param description
+     * @param imageUrl
+     * @param qtin13
+     * @param name
+     * @param offer
+     * @param sku
+     * @param url
+     * @param weight
+     */
     public static void addProduct(int productId,Product.Audience audience, String brand, String description, Product.ImageUrl imageUrl, long qtin13, String name, Product.Offers offer, int sku, Product.Url url, Product.Weight weight) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
-        EntityTransaction et;
+        EntityTransaction et ;
         try {
             et = entityManager.getTransaction();
             et.begin();
@@ -51,6 +70,17 @@ public class Persist {
             e.printStackTrace();
         }
     }
+
+    /**
+     *
+     * @param id
+     * @param author
+     * @param contentUrl
+     * @param description
+     * @param mainEntityOfPage
+     * @param name
+     * @param representativeOfPage
+     */
     public static void addImageObject(int id,String author, ImageObject.ContentUrl contentUrl, String description, ImageObject.MainEntityOfPage mainEntityOfPage,String name,Boolean representativeOfPage) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         EntityTransaction et;
@@ -59,7 +89,8 @@ public class Persist {
             et.begin();
             ImageObject imageObject = new ImageObject(id,author,contentUrl,description,mainEntityOfPage,name,representativeOfPage);
             imageObject.setId(id);
-            entityManager.persist(imageObject);
+            ImageObject imageObject1= entityManager.merge(imageObject);
+            entityManager.persist(imageObject1);
             et.commit();
 
         } catch (Exception e) {
