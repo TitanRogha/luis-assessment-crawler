@@ -1,10 +1,12 @@
+package models;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
-public class Product implements JsonLd{
+public class Product  {
 
     @JsonProperty("http://schema.org/audience")
     private Audience audience;
@@ -27,8 +29,20 @@ public class Product implements JsonLd{
     @JsonProperty("http://schema.org/offers")
     private Offers offers;
 
+    @JsonProperty("http://schema.org/productId")
+    private Integer productId;
+
+    @JsonProperty("http://schema.org/sku")
+    private Integer sku;
+
+    @JsonProperty("http://schema.org/url")
+    private Url url;
+
+    @JsonProperty("http://schema.org/weight")
+    private Weight weight;
+
     @Data
-    private static class Audience{
+    private static class Audience {
         @JsonProperty("@type")
         private String type;
 
@@ -37,13 +51,13 @@ public class Product implements JsonLd{
     }
 
     @Data
-    private static class Image{
+    private static class Image {
         @JsonProperty("@id")
         private String id;
     }
 
     @Data
-    private static class Offers{
+    private static class Offers {
         @JsonProperty("@type")
         private String type;
 
@@ -62,26 +76,14 @@ public class Product implements JsonLd{
         @JsonProperty("http://schema.org/url")
         private Url url;
 
-        private static class Url{
+        private static class Url {
             @JsonProperty("@id")
             private String id;
         }
 
     }
 
-    @JsonProperty("http://schema.org/productId")
-    private Integer productId;
-
-    @JsonProperty("http://schema.org/sku")
-    private Integer sku;
-
-    @JsonProperty("http://schema.org/url")
-    private Url url;
-
-    @JsonProperty("http://schema.org/weight")
-    private Weight weight;
-
-    private static class Weight{
+    private static class Weight {
         @JsonProperty("@type")
         private String type;
 
@@ -92,8 +94,7 @@ public class Product implements JsonLd{
         private Integer value;
     }
 
-
-    private static class Url{
+    private static class Url {
         @JsonProperty("@id")
         private String id;
     }

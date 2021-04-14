@@ -3,25 +3,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jsonldjava.core.JsonLdOptions;
 import com.github.jsonldjava.core.JsonLdProcessor;
 import com.github.jsonldjava.utils.JsonUtils;
+import models.WebSite;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import  config.Persist;
 
 public class WebCrawler {
 
-    private String selector = "a[href]";
 
     public static void main(String[] args) {
         String url = "https://www.britishcornershop.co.uk/";
-        crawl(1, url, new ArrayList<>());
 
+        crawl(1, url, new ArrayList<>());
     }
 
     private static void crawl(int level, String url, ArrayList<String> visited) {
@@ -53,10 +52,24 @@ public class WebCrawler {
                             Object jsonObject = JsonUtils.fromString(element.data());
                             Object compact = JsonLdProcessor.compact(jsonObject,new HashMap<>(),new JsonLdOptions());
                             String compactContent = JsonUtils.toPrettyString(compact);
-                            JsonLd jsonLd = Factory.build(type);
-                            System.out.println(compactContent);
-                            jsonLd=objectMapper.readValue(compactContent, jsonLd.getClass());
-                            //System.out.println(jsonLd.toString());
+                            System.out.println(type);
+
+                            switch (type){
+                                case "WebSite":
+                                    WebSite webSite=objectMapper.readValue(compactContent, WebSite.class);
+                                    Persist.addWebSite(1, webSite.getPotentialAction().getType(),webSite.getPotentialAction().getQuery_input(),webSite.getPotentialAction().getTarget(),webSite.getUrl().getUrl());
+
+                                case "Product":
+
+                                case "ImageObject":
+
+                                default:
+
+
+                            }
+
+
+
                         }
                 }
                 System.out.println("Link " + url);
