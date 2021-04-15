@@ -22,3 +22,5 @@ To check data stored in database you can access publicly to britishcorner.cykipv
 USAGE
 
 This app can run native with maven running on sdk 16 or as a docker image.
+
+docker build -t assesment . && docker run -p80:80 assesment
