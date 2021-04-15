@@ -17,8 +17,12 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 public class Crawler {
+
+    private final static Logger LOGGER = Logger.getLogger("bitacora.subnivel.Control");
+
 
     /**
      *
@@ -27,6 +31,7 @@ public class Crawler {
      * @param visited
      */
     public static void crawl(int level, String url, ArrayList<String> visited) {
+        LOGGER.info("Crawling page "+ url);
         if (level <= level) {
             Document doc = request(url, visited);
             if (doc != null) {
@@ -67,20 +72,25 @@ public class Crawler {
                             case "WebSite":
                                 WebSite webSite = objectMapper.readValue(compactContent, WebSite.class);
                                 Persist.addWebSite(webSite.getPotentialAction(), webSite.getUrl());
+                                LOGGER.info("Website json-ld saved successfully :" +webSite.getPotentialAction().getTarget());
                                 break;
                             case "Product":
                                 Product product = objectMapper.readValue(compactContent, Product.class);
                                 Persist.addProduct(product.getProductId(), product.getAudience(), product.getBrand(), product.getDescription(), product.getImage(), product.getQtin13(), product.getName(), product.getOffers(), product.getSku(), product.getUrl(), product.getWeight());
                                 counter++;
+                                LOGGER.info("Product json-ld saved successfully :" +product.getName());
                                 break;
                             case "ImageObject":
                                 ImageObject imageObject = objectMapper.readValue(compactContent, ImageObject.class);
                                 Persist.addImageObject(counter, imageObject.getAuthor(), imageObject.getContentUrl(), imageObject.getDescription(), imageObject.getMainEntityOfPage(), imageObject.getName(), imageObject.getRepresentativeOfPage());
+                                LOGGER.info("ImageObject json-ld saved successfully :" +imageObject.getName());
                                 break;
                             default:
                         }
                     }
                 }
+                LOGGER.info("Actual crawled page title "+ doc.title());
+
                 v.add(url);
                 return doc;
             }
